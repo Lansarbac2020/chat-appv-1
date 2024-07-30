@@ -40,16 +40,20 @@ const CheckPasswordPage = () => {
     e.stopPropagation()
 
     const URL = `${process.env.REACT_APP_BACKEND_URL}/api/password`
+     const payLoad={
+     
 
+     }
     try {
         const response = await axios({
-          method :'post',
-          url : URL,
-          data : {
-            userId : location?.state?._id,
-            password : data.password
-          },
-          withCredentials : true
+         method: 'POST',
+            url : URL,
+            data : {
+              userId : location?.state?._id,
+              password : data.password
+            },
+            withCredentials : true
+          
         })
 
         toast.success(response.data.message)
