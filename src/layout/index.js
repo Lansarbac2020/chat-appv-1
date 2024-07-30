@@ -5,13 +5,13 @@ const AuthLayout = ({children}) => {
   return (
     <>
         <header className='flex justify-center items-center p-3 h-20 shadow-md bg-white'>
-            {/* <img
+            <img
             src={logo}
             alt='logo'
             width={180}
             height={50}
-            /> */}
-            LOGO
+            />
+            
         </header>
         {children}
         
