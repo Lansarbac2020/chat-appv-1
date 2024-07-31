@@ -41,6 +41,7 @@ const SideBar = () => {
                     height={40}
                     name={user?.name}
                     imageUrl={user?.profile_pic}
+                    userId={user?._id}
                     
                     />
                     

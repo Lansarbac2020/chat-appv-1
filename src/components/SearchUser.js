@@ -32,7 +32,7 @@ const SearchUser = ({onClose}) => {
 
     console.log("searchUser", searchUser)
   return (
-    <div className='fixed top-0 bottom-0 left-0 right-0 bg-slate-700 bg-opacity-40 p-2'>
+    <div className='fixed top-0 bottom-0 left-0 right-0 bg-slate-700 bg-opacity-40 p-2 z-10'>
         <div className='w-full max-w-lg mx-auto mt-10 '>
            <div className=' flex bg-white rounded h-14 overflow-hidden'>
             <input type='text' placeholder='Search user' className='w-full outline-none py-1 h-full px-4'
