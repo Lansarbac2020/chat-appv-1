@@ -17,8 +17,8 @@ import SearchUser from './SearchUser';
 const SideBar = () => {
     const user = useSelector(state => state?.user)
     const [editUserOpen ,setEditUserOpen] =useState(false);
-    const [allUser, setAllUser] =useState([]);
-    const [openSearchUser, setOpenUserSearch] =useState(false)
+    const [allUser, setAllUser] = useState([]);
+    const [openSearchUser, setOpenUserSearch] = useState(false)
   return (
     <div className='w-full h-full grid grid-cols-[48px,1fr] bg-white'>
         <div className='bg-slate-300 w-12 h-full rounded-tr-lg rounded-br-lg py-6 text-slate-60 flex flex-col justify-between'>
