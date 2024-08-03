@@ -4,6 +4,10 @@ import { Link, useParams } from 'react-router-dom'
 import Avatar from './Avatar'
 import { HiDotsVertical } from "react-icons/hi";
 import { FaAngleLeft, FaImage, FaPlus, FaVideo } from 'react-icons/fa6';
+import uploadFile from '../helpers/uploadFile';
+import { IoClose, IoSend } from 'react-icons/io5';
+import CircleLoader from './CircleLoader';
+import backgroundImage from '../assets/wallapaper.jpeg'
 
 const MessagePage = () => {
   const params = useParams()
@@ -18,9 +22,62 @@ const MessagePage = () => {
 
   })
   const [openImageVideoUpload, setOpenImageVideoUpload] =useState(false)
+  const [message, setMessage] =useState({
+     text: "",
+     imageurl: "",
+     videoUrl: " "
+  })
+  const[loading, setLoading]=useState(false)
 
  const handleImageVideoUpload =()=>{
   setOpenImageVideoUpload(prev=>!prev)
+ }
+ const handleUploadImage =async(e)=>{
+  const file =e.target.files[0]
+ 
+  setLoading(true)
+  const uploadPhoto =await uploadFile(file)
+  setLoading(false)
+  setOpenImageVideoUpload(false)
+  setMessage(prev=>{
+     return{
+       ...prev,
+        imageurl: uploadPhoto?.url
+     }
+ 
+  })
+ }
+ const handleClearUploadImage =()=>{
+  setMessage(prev=>{
+    return{
+      ...prev,
+       imageurl: ""
+    }
+
+ })
+ }
+ const handleClearUploadVideo =()=>{
+  setMessage(prev=>{
+    return{
+      ...prev,
+       videoUrl: ""
+    }
+
+ })
+ }
+ const handleUploadVideo =async(e)=>{
+  const file =e.target.files[0]
+  setLoading(true)
+  const uploadPhoto =await uploadFile(file)
+  setLoading(false)
+  setOpenImageVideoUpload(false)
+  setMessage(prev=>{
+     return{
+       ...prev,
+        videoUrl: uploadPhoto?.url
+     }
+ 
+  })
  }
   useEffect(()=>{
        if(socketConnection){
@@ -33,8 +90,18 @@ const MessagePage = () => {
          })
        }
   },[socketConnection, params?.userId,user])
+
+  const handleOnchange =(e)=>{
+    const {name, value} =e.target
+    setMessage(prev =>{
+      return{
+        ...prev,
+        text : value
+      }
+    })
+  }
   return (
-    <div>
+    <div style={{backgroundImage : `url(${backgroundImage})`}} className='bg-no-repeat bg-cover'>
          <header className='sticky top-0 h-16 bg-white flex justify-between items-center px-4'>
          <div className='flex  items-center gap-4 '>
           <Link to={'/'} className='lg:hidden'>
@@ -67,7 +134,61 @@ const MessagePage = () => {
           </div>
          </header>
          {/* show message */}
-         <section className='h-[calc(100vh-128px)] overflow-x-hidden overflow-y-scroll scrollbar'>
+         <section className='h-[calc(100vh-128px)] overflow-x-hidden overflow-y-scroll scrollbar relative bg-slate-200 bg-opacity-40'>
+          {/* upload imagedisplay */}
+          {
+            message.imageurl &&(
+              <div className='w-full h-full bg-slate-700 bg-opacity-30 flex justify-center items-center rounded overflow-hidden'>
+                <div className='w-fit p-2 absolute top-0 right-0 cursor-pointer hover:text-rose-900
+                ' onClick={handleClearUploadImage}>
+                  <IoClose size={30}/>
+                </div>
+              <div className='bg-white p-3 '>
+                <img
+                src={message.imageurl}
+                alt='image'
+                
+                className='aspect-square w-full h-full max-w-sm m-2 object-scale-down'
+                />
+  
+              </div>
+  
+            </div>
+            )
+          }
+          {/* upload video */}
+          {
+            message.videoUrl &&(
+              <div className='w-full h-full bg-slate-700 bg-opacity-30 flex justify-center items-center rounded overflow-hidden'>
+                <div className='w-fit p-2 absolute top-0 right-0 cursor-pointer hover:text-rose-900
+                ' onClick={handleClearUploadVideo}>
+                  <IoClose size={30}/>
+                </div>
+              <div className='bg-white p-3 '>
+              <video
+              src={message.videoUrl}
+              
+              alt='video'
+              className='aspect-square w-full h-full max-w-sm m-2 object-scale-down'
+              controls
+              muted
+              autoPlay
+              />
+  
+              </div>
+  
+            </div>
+            )
+          }
+          {
+            loading && (
+              <div className='w-full h-full flex justify-center items-center'>
+                <CircleLoader/>
+              </div>
+              
+            )
+          }
+
           Show MessagePage
          </section>
          {/* send message */}
@@ -94,6 +215,15 @@ const MessagePage = () => {
                         </div>
                         Video
                       </label>
+                      <input type='file' id='uploadImage' name='uploadImage'
+                      onChange={handleUploadImage}
+
+                      className='hidden'
+                      />
+                      <input type='file' id='uploadVideo' name='uploadVideo'
+                      onChange={handleUploadVideo} 
+                      className='hidden'
+                      />
                     </form>
                   </div>
                     )
@@ -101,7 +231,24 @@ const MessagePage = () => {
                   
                 
                  </div>
+                 {/* input message */}
+                 <form className='h-full w-full flex gap-2 '>
+                   
+                  <input
+                  type='text'
+                  placeholder='Type your message here...'
+                  className='py-1 px-4 outline-none w-full h-full'
+                  value={message.text}
+                  onChange={handleOnchange}
+                  />
+                 <button className='text-primary hover:text-secondary  '>
+                  <IoSend size={28}/>
+                 </button>
+                 </form>
+               
          </section>
+
+
     </div>
   )
 }
