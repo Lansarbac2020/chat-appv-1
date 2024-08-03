@@ -8,6 +8,7 @@ import uploadFile from '../helpers/uploadFile';
 import { IoClose, IoSend } from 'react-icons/io5';
 import CircleLoader from './CircleLoader';
 import backgroundImage from '../assets/wallapaper.jpeg'
+import moment from 'moment'
 
 const MessagePage = () => {
   const params = useParams()
@@ -28,6 +29,7 @@ const MessagePage = () => {
      videoUrl: " "
   })
   const[loading, setLoading]=useState(false)
+  const [allMessage, setAllMessage] =useState([])
 
  const handleImageVideoUpload =()=>{
   setOpenImageVideoUpload(prev=>!prev)
@@ -87,6 +89,13 @@ const MessagePage = () => {
            console.log("message-user", data)
            setDataUser(data)
            //update state with new message
+
+         })
+         socketConnection.on('message',(data)=>{
+           console.log("message", data)
+           //update state with new message
+           setAllMessage(data)
+
          })
        }
   },[socketConnection, params?.userId,user])
@@ -99,6 +108,28 @@ const MessagePage = () => {
         text : value
       }
     })
+  }
+  const handleSendMessage=(e)=>{
+    e.preventDefault()
+      if(message.text || message.imageurl || message.videoUrl){
+       if(socketConnection){
+        socketConnection.emit('new message',{
+           
+            sender: user?._id,
+            receiver: params.userId,
+            text: message.text,
+            imageurl: message.imageurl,
+            videoUrl: message.videoUrl,
+            msgByUserId : user?._id
+  
+        })
+        setMessage({
+           text: "",
+           imageurl: "",
+           videoUrl: " "
+        })
+       }
+      }
   }
   return (
     <div style={{backgroundImage : `url(${backgroundImage})`}} className='bg-no-repeat bg-cover'>
@@ -135,10 +166,26 @@ const MessagePage = () => {
          </header>
          {/* show message */}
          <section className='h-[calc(100vh-128px)] overflow-x-hidden overflow-y-scroll scrollbar relative bg-slate-200 bg-opacity-40'>
+                    {/* Show MessagePage */}
+       <div className='flex flex-col gap-2 py-2 mx-2'>
+            {
+              allMessage.map((msg,index)=>{
+                return(
+                  <div className={` p-1 py-1 rounded w-fit max-w-[280px] md:max-w-sm lg:max-w-md ${user._id === msg?.msgByUserId ? "ml-auto bg-teal-100" : "bg-white"}`}>
+                    <p className='px-2'>{msg.text}</p>
+                    <p className='text-xs ml-auto w-fit'>{moment(msg.createdAt).format('LT')}</p>
+                  </div>
+
+                )
+              }
+
+              )
+            }
+          </div>
           {/* upload imagedisplay */}
           {
             message.imageurl &&(
-              <div className='w-full h-full bg-slate-700 bg-opacity-30 flex justify-center items-center rounded overflow-hidden'>
+              <div className='w-full h-full sticky  bg-slate-700 bg-opacity-30 flex justify-center items-center rounded overflow-hidden'>
                 <div className='w-fit p-2 absolute top-0 right-0 cursor-pointer hover:text-rose-900
                 ' onClick={handleClearUploadImage}>
                   <IoClose size={30}/>
@@ -159,7 +206,7 @@ const MessagePage = () => {
           {/* upload video */}
           {
             message.videoUrl &&(
-              <div className='w-full h-full bg-slate-700 bg-opacity-30 flex justify-center items-center rounded overflow-hidden'>
+              <div className='w-full h-full bg-slate-700 bg-opacity-30 flex justify-center items-center rounded overflow-hidden sticky'>
                 <div className='w-fit p-2 absolute top-0 right-0 cursor-pointer hover:text-rose-900
                 ' onClick={handleClearUploadVideo}>
                   <IoClose size={30}/>
@@ -189,7 +236,7 @@ const MessagePage = () => {
             )
           }
 
-          Show MessagePage
+
          </section>
          {/* send message */}
          <section className='h-16 bg-white flex items-center px-4 '>
@@ -232,7 +279,7 @@ const MessagePage = () => {
                 
                  </div>
                  {/* input message */}
-                 <form className='h-full w-full flex gap-2 '>
+                 <form className='h-full w-full flex gap-2 ' onSubmit={handleSendMessage}>
                    
                   <input
                   type='text'

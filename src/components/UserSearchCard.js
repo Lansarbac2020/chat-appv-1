@@ -11,6 +11,7 @@ const UserSearchCard = ({user, onClose}) => {
             height={50}
             name={user?.name}
             userId={user?._id}
+            imageUrl={user?.profile_pic}
             />
         </div>
         <div>
