@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaRocketchat } from "react-icons/fa6";
 import { FaUserPlus } from "react-icons/fa6";
 import { NavLink } from 'react-router-dom';
@@ -19,6 +19,44 @@ const SideBar = () => {
     const [editUserOpen ,setEditUserOpen] =useState(false);
     const [allUser, setAllUser] = useState([]);
     const [openSearchUser, setOpenUserSearch] = useState(false)
+    const socketConnection = useSelector(state => state?.user?.socketConnection);
+
+
+    useEffect(()=>{
+        if(socketConnection){
+          socketConnection.emit('sideBar',user._id)
+          
+          socketConnection.on('conversation',(data)=>{
+
+            console.log("countUnseenMsg", data)
+            const conversationUserData = data.map((conversationuser,index)=>{
+              if(conversationuser?.sender?._id===conversationuser?.receiver?._id){
+                return{
+                ...conversationuser,
+                userDetails : conversationuser?.sender
+
+              }
+              }
+              else if(conversationuser?.receiver?._id !==user?._id){
+                return{
+                  ...conversationuser,
+                  userDetails : conversationuser.receiver
+  
+                }
+              }else{
+                return{
+                  ...conversationuser,
+                  userDetails : conversationuser.sender
+  
+                }
+              }
+              
+            })
+
+            setAllUser(conversationUserData)
+          })
+        }
+    },[socketConnection,user])
   return (
     <div className='w-full h-full grid grid-cols-[48px,1fr] bg-white'>
         <div className='bg-slate-300 w-12 h-full rounded-tr-lg rounded-br-lg py-6 text-slate-60 flex flex-col justify-between'>
@@ -72,6 +110,33 @@ const SideBar = () => {
                 </div>
             )
            }
+      {
+        allUser.map((conv,index)=>{
+          return(
+            <div key={conv?._id} className='flex items-center gap-2'>
+              <div>
+                <Avatar
+                imageUrl={conv?.userDetails?.profile_pic}
+                name={conv?.userDetails?.name}
+                width={50}
+                height={40}
+                />
+
+                </div> 
+                <div>
+                  <h3 className='text-ellipsis line-clamp-1'>{conv?.userDetails?.name}</h3>
+                  <div>
+                    <p>{conv?.lastMsg.text}</p>
+                  </div>
+
+                </div>
+
+            </div>
+        )
+        })
+      
+      }
+
  </div>
         </div>
        {/* edit user detail */}
