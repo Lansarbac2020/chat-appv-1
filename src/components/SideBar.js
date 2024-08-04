@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { FaRocketchat } from "react-icons/fa6";
 import { FaUserPlus } from "react-icons/fa6";
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { IoLogOut } from "react-icons/io5";
 import Avatar from './Avatar';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import EditUserDetails from './EditUserDetails';
 import Dividers from './Dividers';
 import { FiArrowUpLeft } from "react-icons/fi";
 import SearchUser from './SearchUser';
+import { FaImage, FaVideo } from 'react-icons/fa';
+import { logout } from '../redux/userSlice';
 
 
 
@@ -20,6 +22,8 @@ const SideBar = () => {
     const [allUser, setAllUser] = useState([]);
     const [openSearchUser, setOpenUserSearch] = useState(false)
     const socketConnection = useSelector(state => state?.user?.socketConnection);
+    const dispatch =useDispatch();
+    const navigate =useNavigate();
 
 
     useEffect(()=>{
@@ -57,6 +61,12 @@ const SideBar = () => {
           })
         }
     },[socketConnection,user])
+
+    const handleLogout=()=>{
+           dispatch(logout())
+           navigate('/email')
+           localStorage.clear()
+    }
   return (
     <div className='w-full h-full grid grid-cols-[48px,1fr] bg-white'>
         <div className='bg-slate-300 w-12 h-full rounded-tr-lg rounded-br-lg py-6 text-slate-60 flex flex-col justify-between'>
@@ -84,7 +94,7 @@ const SideBar = () => {
                     />
                     
                 </button>
-            <button  title='logout' className='w-12 h-12  flex justify-center items-center cursor-pointer hover:bg-slate-100 hover:scale-105'>
+            <button  title='logout' className='w-12 h-12  flex justify-center items-center cursor-pointer hover:bg-slate-100 hover:scale-105' onClick={handleLogout}>
                 <span className='-ml-2'>
                     <IoLogOut size={30}/> 
                 </span>
@@ -113,25 +123,51 @@ const SideBar = () => {
       {
         allUser.map((conv,index)=>{
           return(
-            <div key={conv?._id} className='flex items-center gap-2'>
+            <NavLink to={"/"+conv?.userDetails?._id}  key={conv?._id} className='flex items-center gap-2 py-3 px-2 border border-transparent hover:border-primary rounded hover:bg-slate-100 cursor-pointer '>
               <div>
                 <Avatar
                 imageUrl={conv?.userDetails?.profile_pic}
                 name={conv?.userDetails?.name}
-                width={50}
-                height={40}
+                width={35}
+                height={35}
                 />
 
                 </div> 
                 <div>
-                  <h3 className='text-ellipsis line-clamp-1'>{conv?.userDetails?.name}</h3>
-                  <div>
-                    <p>{conv?.lastMsg.text}</p>
+                  <h3 className='text-ellipsis line-clamp-1 font-semibold text-base '>{conv?.userDetails?.name}</h3>
+                  <div className='text-slate-500 text-xs flex items-center gap-1'>
+                    <div>
+                      {
+                        conv.lastMsg.imageurl &&(
+                          <div className='flex items-center gap-1'>
+                      <span><FaImage/></span>
+                     {!conv?.lastMsg?.text  &&<span>Image</span> } 
+                            </div>
+                         
+                        )
+                      }
+                         {
+                        conv.lastMsg.videoUrl &&(
+                       <div className='flex items-center gap-1'>
+                      <span><FaVideo/></span>
+                      {!conv?.lastMsg?.text  && <span>Video</span>}
+                        </div>
+                        )
+                      }
+                    </div>
+                    <p className='text-ellipsis line-clamp-1'>{conv?.lastMsg?.text}</p>
                   </div>
+                 
 
                 </div>
+                {
+                  Boolean(conv?.unseenMsg) && (
+                    <p className='text-xs w-6 h-6 flex justify-center items-center ml-auto p-1 bg-primary text-white font-semibold rounded-full'>{conv?.unseenMsg}</p>
+                  )
+                }
+                
 
-            </div>
+            </NavLink>
         )
         })
       

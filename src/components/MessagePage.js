@@ -86,6 +86,8 @@ const MessagePage = () => {
     if (socketConnection) {
       socketConnection.emit('message page', params.userId);
 
+      socketConnection.emit('seen', params.userId)
+
       socketConnection.on('message-user', (data) => {
         setDataUser(data);
       });
@@ -93,6 +95,8 @@ const MessagePage = () => {
       socketConnection.on('message', (data) => {
         setAllMessage(data);
       });
+
+
     }
   }, [socketConnection, params?.userId, user]);
 
