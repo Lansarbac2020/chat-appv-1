@@ -12,11 +12,7 @@ import SearchUser from './SearchUser';
 import { FaImage, FaVideo } from 'react-icons/fa';
 import { logout } from '../redux/userSlice';
 
-
-
-
-
-const SideBar = () => {
+  const SideBar = () => {
     const user = useSelector(state => state?.user)
     const [editUserOpen ,setEditUserOpen] =useState(false);
     const [allUser, setAllUser] = useState([]);
@@ -32,7 +28,7 @@ const SideBar = () => {
           
           socketConnection.on('conversation',(data)=>{
 
-            console.log("countUnseenMsg", data)
+            //console.log("countUnseenMsg", data)
             const conversationUserData = data.map((conversationuser,index)=>{
               if(conversationuser?.sender?._id===conversationuser?.receiver?._id){
                 return{
