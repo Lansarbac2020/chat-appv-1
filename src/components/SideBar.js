@@ -6,7 +6,6 @@ import { IoLogOut } from "react-icons/io5";
 import Avatar from './Avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import EditUserDetails from './EditUserDetails';
-import Dividers from './Dividers';
 import { FiArrowUpLeft } from "react-icons/fi";
 import SearchUser from './SearchUser';
 import { FaImage, FaVideo } from 'react-icons/fa';

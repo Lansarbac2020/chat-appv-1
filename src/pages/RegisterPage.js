@@ -55,7 +55,7 @@ const navigate = useNavigate()
   const URL =`${process.env.REACT_APP_BACKEND_URL}/api/register`
   try{
     const response =await axios.post(URL,data)
-    console.log("response", response);
+    //console.log("response", response);
 
     toast.success(response.data.message)
 
