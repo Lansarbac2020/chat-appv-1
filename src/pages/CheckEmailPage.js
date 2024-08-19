@@ -53,7 +53,7 @@ const navigate = useNavigate()
 
   } catch(error){
     toast.error(error?.response?.data?.message)
-     //console.log("error", error)
+     console.log("error", error)
   }
 
  // console.log("data:" ,data)
