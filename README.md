@@ -1,4 +1,4 @@
-# Chat-App (Open source under development)
+# Chat-App (Open Project source under development)
 
 A real-time chat application built with Node.js, MongoDB, JWT for authentication, CORS for handling cross-origin requests, Socket.IO for real-time communication, React.js for the frontend, and Tailwind CSS for styling.
 
